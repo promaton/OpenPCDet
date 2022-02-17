@@ -3,7 +3,11 @@ import pickle
 import os
 import copy
 import numpy as np
-import SharedArray
+try:
+    import SharedArray
+except ImportError:
+    print('SharedArray is not installed. Please install it first.')
+
 import torch.distributed as dist
 
 from ...ops.iou3d_nms import iou3d_nms_utils

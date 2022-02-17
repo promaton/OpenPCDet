@@ -9,7 +9,10 @@ import copy
 import numpy as np
 import torch
 import multiprocessing
-import SharedArray
+try:
+    import SharedArray
+except ImportError:
+    print('SharedArray is not installed. Please install it first.')
 import torch.distributed as dist
 from tqdm import tqdm
 from pathlib import Path

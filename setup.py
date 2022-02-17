@@ -44,7 +44,6 @@ if __name__ == '__main__':
             'pyyaml',
             'scikit-image',
             'tqdm',
-            'SharedArray',
             # 'spconv',  # spconv has different names depending on the cuda version
         ],
 
