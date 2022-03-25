@@ -1,4 +1,3 @@
-import 
 import argparse
 import datetime
 import glob
