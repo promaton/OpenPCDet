@@ -5,3 +5,4 @@ easydict
 pyyaml
 tqdm
 Pillow
+scipy

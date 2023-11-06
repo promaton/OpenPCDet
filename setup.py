@@ -47,6 +47,7 @@ if __name__ == '__main__':
             # 'SharedArray',
             # 'spconv',  # spconv has different names depending on the cuda version
             'Pillow',
+            'scipy',
         ],
 
         author='Shaoshuai Shi',
