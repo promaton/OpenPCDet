@@ -7,6 +7,7 @@ easydict
 pyyaml
 scikit-image
 spconv-cu113
+cumm-cu113
 tqdm
 torchvision
 SharedArray
