@@ -3,7 +3,7 @@ from functools import partial
 import numpy as np
 # from skimage import transform
 import torch
-import torchvision
+# import torchvision
 from ...utils import box_utils, common_utils
 
 tv = None
@@ -232,6 +232,7 @@ class DataProcessor(object):
         return data_dict
     """
 
+    """
     def image_normalize(self, data_dict=None, config=None):
         if data_dict is None:
             return partial(self.image_normalize, config=config)
@@ -245,6 +246,7 @@ class DataProcessor(object):
         )
         data_dict["camera_imgs"] = [compose(img) for img in data_dict["camera_imgs"]]
         return data_dict
+    """
     
     def image_calibrate(self,data_dict=None, config=None):
         if data_dict is None:
