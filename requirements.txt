@@ -8,6 +8,5 @@ pyyaml
 scikit-image
 tqdm
 torchvision
-SharedArray
 opencv-python
 pyquaternion
