@@ -6,8 +6,6 @@ tensorboardX
 easydict
 pyyaml
 scikit-image
-cumm-cu113==0.2.9
-spconv-cu113==2.1.25
 tqdm
 torchvision
 SharedArray

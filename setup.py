@@ -45,7 +45,7 @@ if __name__ == '__main__':
             'scikit-image',
             'tqdm',
             'SharedArray',
-            'spconv-cu113',  # spconv has different names depending on the cuda version
+            # 'spconv',  # spconv has different names depending on the cuda version
         ],
 
         author='Shaoshuai Shi',
