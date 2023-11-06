@@ -46,6 +46,7 @@ if __name__ == '__main__':
             'tqdm',
             # 'SharedArray',
             # 'spconv',  # spconv has different names depending on the cuda version
+            'Pillow',
         ],
 
         author='Shaoshuai Shi',
