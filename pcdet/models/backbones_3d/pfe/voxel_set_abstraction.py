@@ -1,12 +1,9 @@
 import math
-
 import numpy as np
 import torch
 import torch.nn as nn
 
-from ....ops.pointnet2.pointnet2_stack import (
-    pointnet2_modules as pointnet2_stack_modules,
-)
+from ....ops.pointnet2.pointnet2_stack import pointnet2_modules as pointnet2_stack_modules
 from ....ops.pointnet2.pointnet2_stack import pointnet2_utils as pointnet2_stack_utils
 from ....utils import common_utils
 
@@ -411,9 +408,6 @@ class VoxelSetAbstraction(nn.Module):
         batch_dict['point_features_before_fusion'] = point_features.view(-1, point_features.shape[-1])
         point_features = self.vsa_point_feature_fusion(point_features.view(-1, point_features.shape[-1]))
 
-        batch_dict['point_features'] = point_features  # (BxN, C)
-        batch_dict['point_coords'] = keypoints  # (BxN, 4)
-        return batch_dict
         batch_dict['point_features'] = point_features  # (BxN, C)
         batch_dict['point_coords'] = keypoints  # (BxN, 4)
         return batch_dict
