@@ -1,7 +1,7 @@
 from functools import partial
 
 import numpy as np
-from skimage import transform
+# from skimage import transform
 
 from ...utils import box_utils, common_utils
 
