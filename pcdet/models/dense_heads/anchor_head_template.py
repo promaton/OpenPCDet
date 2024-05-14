@@ -101,38 +101,53 @@ class AnchorHeadTemplate(nn.Module):
     def get_cls_layer_loss(self):
         cls_preds = self.forward_ret_dict['cls_preds']
         box_cls_labels = self.forward_ret_dict['box_cls_labels']
+        one_hot_targets = self._get_one_hot_box_labels(
+            box_cls_labels, n_labels=self.num_class, dtype=cls_preds.dtype
+        )
+        cls_weights = self._get_cls_weights(box_cls_labels)
         batch_size = int(cls_preds.shape[0])
-        cared = box_cls_labels >= 0  # [N, num_anchors]
+        cls_preds = cls_preds.view(batch_size, -1, self.num_class)
+        cls_loss = self._get_weighted_loss(
+            cls_preds, one_hot_targets, cls_weights, batch_size
+        )
+        tb_dict = {
+            'rpn_loss_cls': cls_loss.item()
+        }
+        return cls_loss, tb_dict
+
+    def _get_cls_weights(self, box_cls_labels):
         positives = box_cls_labels > 0
         negatives = box_cls_labels == 0
         negative_cls_weights = negatives * 1.0
         cls_weights = (negative_cls_weights + 1.0 * positives).float()
-        reg_weights = positives.float()
-        if self.num_class == 1:
-            # class agnostic
-            box_cls_labels[positives] = 1
+        positives_normalizer = positives.sum(1, keepdim=True).float()
+        cls_weights /= torch.clamp(positives_normalizer, min=1.0)
+        return cls_weights
 
-        pos_normalizer = positives.sum(1, keepdim=True).float()
-        reg_weights /= torch.clamp(pos_normalizer, min=1.0)
-        cls_weights /= torch.clamp(pos_normalizer, min=1.0)
+    def _get_weighted_loss(self, cls_preds, one_hot_targets, cls_weights, batch_size):
+        cls_loss_src = self.cls_loss_func(
+            cls_preds, one_hot_targets, weights=cls_weights
+        )  # [N, M]
+        cls_loss = cls_loss_src.sum() / batch_size
+        cls_loss = cls_loss * self.model_cfg.LOSS_CONFIG.LOSS_WEIGHTS["cls_weight"]
+        return cls_loss
+
+    def _get_one_hot_box_labels(self, box_cls_labels, n_labels, dtype=torch.float32):
+        if n_labels == 1:
+            # class agnostic
+            box_cls_labels[box_cls_labels > 0] = 1
+        cared = box_cls_labels >= 0  # [N, num_anchors]
         cls_targets = box_cls_labels * cared.type_as(box_cls_labels)
         cls_targets = cls_targets.unsqueeze(dim=-1)
 
         cls_targets = cls_targets.squeeze(dim=-1)
         one_hot_targets = torch.zeros(
-            *list(cls_targets.shape), self.num_class + 1, dtype=cls_preds.dtype, device=cls_targets.device
+            *list(cls_targets.shape), n_labels + 1, dtype=dtype, device=cls_targets.device
         )
         one_hot_targets.scatter_(-1, cls_targets.unsqueeze(dim=-1).long(), 1.0)
-        cls_preds = cls_preds.view(batch_size, -1, self.num_class)
         one_hot_targets = one_hot_targets[..., 1:]
-        cls_loss_src = self.cls_loss_func(cls_preds, one_hot_targets, weights=cls_weights)  # [N, M]
-        cls_loss = cls_loss_src.sum() / batch_size
 
-        cls_loss = cls_loss * self.model_cfg.LOSS_CONFIG.LOSS_WEIGHTS['cls_weight']
-        tb_dict = {
-            'rpn_loss_cls': cls_loss.item()
-        }
-        return cls_loss, tb_dict
+        return one_hot_targets
 
     @staticmethod
     def add_sin_difference(boxes1, boxes2, dim=6):
