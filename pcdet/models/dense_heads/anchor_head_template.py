@@ -102,11 +102,11 @@ class AnchorHeadTemplate(nn.Module):
         cls_preds = self.forward_ret_dict['cls_preds']
         box_cls_labels = self.forward_ret_dict['box_cls_labels']
         one_hot_targets = self._get_one_hot_box_labels(
-            box_cls_labels, n_labels=self.num_class, dtype=cls_preds.dtype
+            box_cls_labels, n_labels=self.num_class[0], dtype=cls_preds.dtype
         )
         cls_weights = self._get_cls_weights(box_cls_labels)
         batch_size = int(cls_preds.shape[0])
-        cls_preds = cls_preds.view(batch_size, -1, self.num_class)
+        cls_preds = cls_preds.view(batch_size, -1, self.num_class[0])
         cls_loss = self._get_weighted_loss(
             cls_preds, one_hot_targets, cls_weights, batch_size
         )
