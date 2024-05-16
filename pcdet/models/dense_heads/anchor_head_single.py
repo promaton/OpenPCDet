@@ -16,7 +16,7 @@ class AnchorHeadSingle(AnchorHeadTemplate):
         self.num_anchors_per_location = sum(self.num_anchors_per_location)
 
         self.conv_cls = nn.Conv2d(
-            input_channels, self.num_anchors_per_location * self.num_class[0],
+            input_channels, self.num_anchors_per_location * self.num_class,
             kernel_size=1
         )
         self.conv_box = nn.Conv2d(
@@ -72,11 +72,5 @@ class AnchorHeadSingle(AnchorHeadTemplate):
             data_dict['batch_cls_preds'] = batch_cls_preds
             data_dict['batch_box_preds'] = batch_box_preds
             data_dict['cls_preds_normalized'] = False
-
-            # not predicting type, predict first class for everything
-            B, num_anchors, C = batch_cls_preds.shape
-            type_preds = torch.zeros((B, num_anchors, self.num_class[1]), dtype=batch_cls_preds.dtype, device=batch_cls_preds.device)
-            type_preds[..., 0] = 1
-            data_dict['batch_cls_type_preds'] = type_preds
 
         return data_dict
