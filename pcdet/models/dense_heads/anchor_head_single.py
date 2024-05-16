@@ -1,6 +1,5 @@
 import numpy as np
 import torch.nn as nn
-import torch
 
 from .anchor_head_template import AnchorHeadTemplate
 

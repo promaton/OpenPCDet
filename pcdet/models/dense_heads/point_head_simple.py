@@ -64,7 +64,7 @@ class PointHeadSimple(PointHeadTemplate):
                 point_features_before_fusion: (N1 + N2 + N3 + ..., C)
                 point_coords: (N1 + N2 + N3 + ..., 4) [bs_idx, x, y, z]
                 point_labels (optional): (N1 + N2 + N3 + ...)
-                gt_boxes (optional): (B, M, 7+N_Class_Heads)
+                gt_boxes (optional): (B, M, 7 + N_Class_Heads)
         Returns:
             batch_dict:
                 point_cls_scores: (N1 + N2 + N3 + ..., 1)

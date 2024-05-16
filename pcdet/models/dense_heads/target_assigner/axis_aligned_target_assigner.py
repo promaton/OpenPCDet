@@ -55,7 +55,7 @@ class AxisAlignedTargetAssigner(object):
 
         batch_size = gt_boxes_with_classes.shape[0]
         gt_classes = gt_boxes_with_classes[:, :, 7]
-        gt_aux_classes = gt_boxes_with_classes[:, :, 8]
+        gt_aux_classes = gt_boxes_with_classes[:, :, -1]
         gt_boxes = gt_boxes_with_classes[:, :, :7]
         for k in range(batch_size):
             cur_gt = gt_boxes[k]

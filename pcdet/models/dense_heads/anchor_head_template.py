@@ -101,7 +101,7 @@ class AnchorHeadTemplate(nn.Module):
     def get_cls_layer_loss(self):
         cls_preds = self.forward_ret_dict['cls_preds']
         box_cls_labels = self.forward_ret_dict['box_cls_labels']
-        cls_loss = self.get_cls_layer_loss(
+        cls_loss = self.get_cls_layer_loss_one_set(
             cls_preds=cls_preds, box_cls_labels=box_cls_labels, num_class=self.num_class
 
         )
