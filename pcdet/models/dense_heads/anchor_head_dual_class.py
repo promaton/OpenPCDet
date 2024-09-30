@@ -96,10 +96,12 @@ class AnchorHeadDualClass(AnchorHeadTemplate):
                 batch_size=data_dict['batch_size'],
                 cls_preds=aux_cls_preds, box_preds=box_preds, dir_cls_preds=None,
             )
+            batch_cls_preds = self.class_loss.get_activation(batch_cls_preds)
+            batch_aux_cls_preds = self.class_loss_aux.get_activation(batch_aux_cls_preds)
             data_dict['batch_cls_preds'] = batch_cls_preds
             data_dict['batch_box_preds'] = batch_box_preds
             data_dict['batch_aux_cls_preds'] = batch_aux_cls_preds
-            data_dict['cls_preds_normalized'] = False
+            data_dict['cls_preds_normalized'] = True
 
         return data_dict
 
@@ -108,11 +110,13 @@ class AnchorHeadDualClass(AnchorHeadTemplate):
             cls_preds=self.forward_ret_dict["cls_preds"],
             box_cls_labels=self.forward_ret_dict["box_cls_labels"],
             num_class=self.num_class,
+            loss_func=self.class_loss,
         )
         aux_cls_loss = self.get_cls_layer_loss_one_set(
             cls_preds=self.forward_ret_dict["aux_cls_preds"],
             box_cls_labels=self.forward_ret_dict["box_aux_cls_labels"],
             num_class=self.num_aux_class,
+            loss_func=self.class_loss_aux,
         )
         # combine losses
         cls_loss = cls_fdi_loss + aux_cls_loss

@@ -75,6 +75,10 @@ class AnchorHeadTemplate(nn.Module):
             'cls_loss_func',
             loss_utils.SigmoidFocalClassificationLoss(alpha=0.25, gamma=2.0)
         )
+        self.add_module(
+            'cls_loss_func_aux',
+            loss_utils.SigmoidFocalClassificationLoss(alpha=0.25, gamma=2.0)
+        )
         reg_loss_name = 'WeightedSmoothL1Loss' if losses_cfg.get('REG_LOSS_TYPE', None) is None \
             else losses_cfg.REG_LOSS_TYPE
         self.add_module(
@@ -110,7 +114,8 @@ class AnchorHeadTemplate(nn.Module):
         }
         return cls_loss, tb_dict
 
-    def get_cls_layer_loss_one_set(self, cls_preds, box_cls_labels, num_class):
+    def get_cls_layer_loss_one_set(self, cls_preds, box_cls_labels, num_class,
+                                   loss_func = None):
         batch_size = int(cls_preds.shape[0])
         cared = box_cls_labels >= 0  # [N, num_anchors]
         positives = box_cls_labels > 0
@@ -135,7 +140,9 @@ class AnchorHeadTemplate(nn.Module):
         one_hot_targets.scatter_(-1, cls_targets.unsqueeze(dim=-1).long(), 1.0)
         cls_preds = cls_preds.view(batch_size, -1, num_class)
         one_hot_targets = one_hot_targets[..., 1:]
-        cls_loss_src = self.cls_loss_func(cls_preds, one_hot_targets, weights=cls_weights)  # [N, M]
+        if loss_func is None:
+            loss_func = self.cls_loss_func
+        cls_loss_src = loss_func(cls_preds, one_hot_targets, weights=cls_weights)  # [N, M]
         cls_loss = cls_loss_src.sum() / batch_size
 
         cls_loss = cls_loss * self.model_cfg.LOSS_CONFIG.LOSS_WEIGHTS['cls_weight']
